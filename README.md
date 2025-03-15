@@ -209,7 +209,7 @@ Go to edit the routes of the private table Add a route to the private table that
 
 ![image](https://github.com/user-attachments/assets/ce66a0a9-fdc2-49aa-b465-f5bc543fad1f)
 
-<h2>Task 2. Create Your Security Groups</h2>
+ Create Your Security Groups</h2>
 
 Now to create our security groups (One for our bastion host, web server, app server, and our database). we will head to Security Groups on the left and click “Create security group”.
 
@@ -226,6 +226,300 @@ Give it three inbound rules, one for SSH using your IP and one for HTTP using 0.
 ![image](https://github.com/user-attachments/assets/db6f817a-aa95-4a15-baf9-39f29501ae3d)
 
 Create another security group Give it a name and description letting you know it is for a Web server Assign your VPC to it.
+
+![image](https://github.com/user-attachments/assets/77d024fe-d297-41bc-a313-2c803a50cd0b)
+
+Give it the same inbound rules as the Bastion Host security group.
+
+![image](https://github.com/user-attachments/assets/81d46a23-e26d-4b47-bd1b-bbb49635902d)
+
+![image](https://github.com/user-attachments/assets/a0940976-0764-4b7d-ad63-8a9a191b08ed)
+
+Create another security group Give it a name and description letting you know it is for an app server.
+
+![image](https://github.com/user-attachments/assets/4ef35213-727f-4cd9-8a33-e2d8396eebc2)
+
+Assign your VPC to it Give it an inbound rule for All ICMP -IPv4 with a source of your web server SG and another inbound rule for SSH with a source of your bastion host SG.
+
+![image](https://github.com/user-attachments/assets/d9cddbb4-65c5-4528-96a9-8d2b1c54656d)
+
+![image](https://github.com/user-attachments/assets/206474c2-a3cb-4c8e-b4be-7b7281408811)
+
+Create one final security group. Give it a name and description letting you know it is for a database server. Assign your VPC to it.
+
+![image](https://github.com/user-attachments/assets/4e1fb31c-f76b-4fa3-88d1-a245fdc2b3c5)
+
+Give it two inbound rules both for MYSQL/Aurora and give one of them a source of your app server SG and the other one a source of your bastion host SG.
+
+![image](https://github.com/user-attachments/assets/8ce57db1-fe57-471d-b9a8-29744acaf012)
+
+![image](https://github.com/user-attachments/assets/d0de1447-a85c-4298-9bf0-027c38f98dc7)
+
+Go back to your bastion host inbound rules and add one more for MYSQL/Aurora and a source of your database SG.
+
+![image](https://github.com/user-attachments/assets/9721e0d7-5d50-41a7-a9c9-5813afb6f07d)
+
+Go back to your web server inbound rules and add one more for All ICMP — IPv4 and a source of your app server SG.
+
+![image](https://github.com/user-attachments/assets/30043831-7514-4d2e-b5c3-839c7d9849db)
+
+Go back to your app server inbound rules and add one more for MYSQL/Aurora and a source of your database SG and then an HTTP and HTTPS rule both with a source of 0.0.0.0/0.
+
+![image](https://github.com/user-attachments/assets/00d25e3f-5599-446d-95b2-b43c3d38b096)
+
+<h2>Tast 2. Create Servers</h2>
+
+In this task, you launch an EC2 instance into the new VPC. You configure the instance to act as a web server. On the AWS Management Console, in the Search bar, enter and choose EC2 to go to the EC2 Management Console.
+
+![image](https://github.com/user-attachments/assets/4868fb19-b48a-4d12-a55f-9665d66f38d3)
+
+<h3>Create Bastion Host Server</h3>
+
+![image](https://github.com/user-attachments/assets/1c61820d-c05e-46c4-bc63-c3a227e8d2ce)
+
+Select Amazon Linux 2 AMI
+
+![image](https://github.com/user-attachments/assets/4b7c2b1c-3e07-47c8-a12e-56bb05bccf06)
+
+Instance type: Select t2.micro
+
+![image](https://github.com/user-attachments/assets/2ba06ba2-5b25-4b16-bce9-09e7ac3f5227)
+
+Put in your VPC and Public Subnet and enable auto assign public IP. Select an existing group and select your Bastion Host SG.
+
+![image](https://github.com/user-attachments/assets/903da5d8-7781-45db-ac8c-b1962417e9f2)
+
+Storage leave default. Add a name tag to let you know this is the Bastion Host Launch and choose an existing keypair. This can be downloaded from the lab page.
+
+![image](https://github.com/user-attachments/assets/a1c6fc63-b9f5-46b9-9872-7f2411af66ae)
+
+![image](https://github.com/user-attachments/assets/0551db5c-ec13-494e-8d89-d51cfaa4a09c)
+
+To create the Web Server follow the same steps until you get to Step 3
+
+![image](https://github.com/user-attachments/assets/38febb78-4e42-4abb-afe1-821fdff34ede)
+
+Follow along like previously and change your network, and enable auto assign public ip.
+
+![image](https://github.com/user-attachments/assets/22d46f2d-4c5a-4c1c-a8ff-d2228f227e1f)
+
+Then go to user data and type this into it to set up the web server
+
+    #!/bin/bash
+    sudo yum update -y
+    sudo amazon-linux-extras install -y lamp-mariadb10.2-php7.2 php7.2
+    Sudo yum install -y httpd
+    sudo systemctl start httpd
+    sudo systemctl enable httpd
+
+![image](https://github.com/user-attachments/assets/d64a8608-cca2-41ad-9c36-679293221f61)
+
+Just like before launch and use the existing keypair
+
+Follow the same steps once again to create the app server until you get to step 3
+
+![image](https://github.com/user-attachments/assets/0cf4df1e-dbb4-409f-a3f6-0b4a6fc5f150)
+
+Put in your VPC and then choose Private Subnet 1 for the subnet and leave auto assign public IP disabled.
+
+![image](https://github.com/user-attachments/assets/045ae724-10c9-4df7-b20a-3fc651971deb)
+Then go into metadata and type this out to set up a database server on our app server
+     
+    #!/bin/bash
+    sudo yum install -y mariadb-server
+    Sudo service mariadb start
+    
+![image](https://github.com/user-attachments/assets/ebe8df10-576f-4294-aa56-7ef2d8ec3ee3)
+
+Give it a name letting you know it is the App Server
+
+● Select an existing security group and select the app server SG
+
+● Just like before launch and use the existing keypair
+
+![image](https://github.com/user-attachments/assets/ecf09241-5602-43b4-ab88-44bc3767d2e5)
+
+<h2>Task 3: Create a Database </h2>
+Create a DB subnet group by first heading to the Amazon RDS service page on the AWS management console.
+
+![image](https://github.com/user-attachments/assets/8361ada4-0a23-46b4-acf0-ada5b5b21620)
+
+Click on Subnet Groups on the left hand side and the click on “Create DB subnet group”.
+
+Give it a name and description letting you know what it is and then assign your VPC to it. Put in the availability zones you used for your subnets.
+
+![image](https://github.com/user-attachments/assets/58b2104c-b078-4978-96a0-b46da04ba6cf)
+
+Select subnets 2 and 3
+
+![image](https://github.com/user-attachments/assets/fb4d2966-7b5c-46e8-aa2a-c4bda361d9eb)
+
+![image](https://github.com/user-attachments/assets/716b0bec-6329-4da6-aad6-0fb67caf1207)
+
+Go to Databases on the left hand side and click on “Create Database”.
+
+![image](https://github.com/user-attachments/assets/54530f90-775e-418d-8cda-ee63c87628ad)
+
+Click on Standard create and MariaDB for the engine type.
+
+![image](https://github.com/user-attachments/assets/56c1a5f2-1f91-4003-82b8-6c206279d816)
+
+Make sure you click on dev/test here.
+
+![image](https://github.com/user-attachments/assets/906a0754-adc6-480c-a7ff-0f01f2a07a4b)
+
+Give it an identifier you can easily identify it with.
+
+● Give it a master username or leave it as default admin. For the purpose of this project, I will be using root
+
+● Give it a password that you write down somewhere else to make sure you have the correct one. For the purpose of this project, I will be using Re:Start!9
+
+![image](https://github.com/user-attachments/assets/499af228-6ac5-4cf1-a63c-bbc4873acb23)
+
+Everything between this and the last step is left default.
+Assign your VPC
+✅ Make sure your subnet group is listed under the subnet group section
+
+✅ Public access is No
+
+✅ Choose existing VPC security groups
+
+✅ Remove the default security group and add your database security group
+
+✅ Select your first availability zone as well
+
+![image](https://github.com/user-attachments/assets/01ba94c7-d320-41f5-b4fc-a049fd399ef4)
+
+![image](https://github.com/user-attachments/assets/84f60099-fa89-4932-825b-6f881881259e)
+
+Scroll down to Additional configuration on the bottom and give it an initial database name and save it in the same spot as your password since it will be used later.
+
+Disable automated backups and encryption since they are not needed (These are normally best practice to leave enabled but the database will spin up faster with those checked off as they are not needed).
+
+![image](https://github.com/user-attachments/assets/6b7a6700-ed95-4da1-ab98-2e30233868b8)
+
+Scroll down all the way to the bottom and create your database
+
+![image](https://github.com/user-attachments/assets/64c9e681-d45d-4181-808e-93df21e4f1e7)
+
+![image](https://github.com/user-attachments/assets/dfa3be72-6a09-4fec-9c4b-4cc152a159fa)
+
+<h2>Task 4: Test connections</h2>
+
+● SSH into your Bastion Host after downloading both the .pem and .ppk files from the lab environment.
+
+This is for windows only as I only have a windows machine to work on, sorry Mac and Linux users. Go into your powershell and type this command out to download the keys.
+
+    pscp -scp -P 22 -i "C:\Users\YourUsername\Downloads\labsuser.ppk" "C:\Users\YourUsername\Downloads\labsuser.pem" ec2-user@BASTION-HOST-PUBLIC-IP:/home/ec2-user/
+
+![image](https://github.com/user-attachments/assets/0da5109d-491c-404c-8a99-b429e97d3992)
+
+After downloading the keys to my Bastion host, SSH into my bastion host Instance.
+
+![image](https://github.com/user-attachments/assets/029ec55b-4f33-4836-9dec-6daa1f72be7c)
+
+Change file permissions for the file you just downloaded to your bastion host by typing chmod 400 labsuser.pem
+
+Then run the following command ssh -i labsuser.pem ec2-user@APP-SERVER-PRIVATE-IP to SSH into my APP Server instance.
+
+Replace APP-SERVER-PRIVATE-IP with the private IP of your app server instance.
+
+![image](https://github.com/user-attachments/assets/cedd6a0d-b456-4194-8eae-a72fab63ba90)
+
+Use ls to see that you are now SSH into a APP Server instance since there is no more labuser.pem key.
+
+<h2>Ping the Web Server Private IP</h2>
+
+Check connectivity from the app server to the Web Server.
+
+Use ping and the private IP address of your web server to ping the web server and see it connect. ping WEB-SERVER-PRIVATE-IP
+
+![image](https://github.com/user-attachments/assets/6bfeca4c-48be-47ff-9733-63bbdac4ead7)
+
+Test out connecting to the database by typing out
+
+mariadb — user=root — password=’Re:Start!9' — host=databse-end-point
+
+<h2>Challenge:</h2>
+
+I Found it difficult to connect to my mariadb database, then I had to troubleshoot.
+
+first I install mariadb client: sudo dnf install -y mariadb105
+
+Then Verify installation with mariadb --version
+Try connecting to my database again.
+
+Replace database-server-endpoint with the database server endpoint
+
+Type show databases; to see your database from the app server
+
+![image](https://github.com/user-attachments/assets/fb540a59-55a4-466a-8c20-11e8e8bba310)
+
+<h2>Conclusion:</h2>
+Why Businesses Choose AWS 3-Tier Architecture
+
+✔ Scalability — Handle traffic spikes seamlessly.
+
+✔ Security — Reduce attack risks with proper isolation.
+
+✔ Cost Savings — Optimize resources.
+
+✔ High Availability — Minimize downtime with AWS failover features.
+
+✔ Future-Ready — Supports microservices, cloud-native development.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
