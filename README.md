@@ -56,7 +56,7 @@ For example, a user’s browser sends a request to the public tier by clicking a
 
 ![image](https://github.com/user-attachments/assets/42789565-e021-4357-9582-1262f4050601)
 
-<h2>Detailed Breakdown of Public and Private Subnets<h2>
+<h2>Detailed Breakdown of Public and Private Subnets</h2>
 Understanding the roles and configurations of public and private subnets is crucial for effectively implementing the 3-tier network architecture. The main feature that makes a subnet "public" or "private" is how instances in that subnet access the internet. 
 
 <h3>Public Subnets</h3>
